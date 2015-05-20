@@ -24,6 +24,7 @@
     NSString *serverID = [defaults objectForKey:@"serverid"];
     
     self.URLText.text= serverID;
+    self.webView.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -38,7 +39,24 @@
     url = [url stringByAppendingString:@"/mapserver2016/mobileviewer/index.html"];
     NSMutableURLRequest * request =[NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
     [self.webView loadRequest:request];
+}
+
+#pragma - mark UIWebView Delegate Methods
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    NSLog(@"Loading URL :%@",request.URL.absoluteString);
     
+    //return FALSE; //to stop loading
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
     //Save the text;
     NSString *serverID = [self.URLText text];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -46,6 +64,21 @@
     [defaults setObject:serverID forKey:@"serverid"];
     [defaults synchronize];
     
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    NSLog(@"Failed to load with error :%@",[error debugDescription]);
+    //clear the webview
+    [webView stringByEvaluatingJavaScriptFromString:@"document.open();document.close()"];
+    UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:@"Error"
+        message:@"Failed to load server"
+        delegate:self
+        cancelButtonTitle:@"OK"
+        otherButtonTitles:nil];
+    
+    [alert show];
 
 }
 
