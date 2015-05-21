@@ -25,6 +25,7 @@
     
     self.URLText.text= serverID;
     self.webView.delegate = self;
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
 
 - (void)didReceiveMemoryWarning {
